@@ -30,22 +30,54 @@ public class BookServiceImpl implements BookService {
 	}
 
 	public List<Book> searchBy(String name, String author) {
-		// TODO Auto-generated method stub
-		return null;
+		Transaction tx = session.beginTransaction();
+		
+		String query = "";
+		
+		if(name.length() != 0 && author.length() !=0) {
+			query = "from Book where name like '%" + name + "%' or author like '%" + author + "%'";
+		} else if (name.length() != 0) {
+			query = "from Book where name like '%" + name + "%'";
+		} else if (author.length() != 0) {
+			query = "from Book where author like '%" + author + "%'";
+		} else {
+			System.out.println("Cannot search the book");
+		}
+		
+		List<Book> books = session.createQuery(query,Book.class).list();
+		
+		tx.commit();
+		
+		return books;
 	}
 
 	public Book findById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		Transaction tx = session.beginTransaction();
+		
+		Book book = session.get(Book.class,id);
+		tx.commit();
+		return book;
 	}
-
+	
+	// insert or update
 	public void save(Book book) {
-		// TODO Auto-generated method stub
+		Transaction tx = session.beginTransaction();
+		
+		session.saveOrUpdate(book);
+		
+		tx.commit();
 		
 	}
 
 	public void deleteById(int id) {
-		// TODO Auto-generated method stub
+		Transaction tx = session.beginTransaction();
+		
+		try {
+			Book book = session.get(Book.class,id);
+			session.delete(book);
+		} finally {
+			tx.commit();
+		}
 		
 	}
 		
